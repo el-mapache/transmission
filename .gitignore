@@ -1,0 +1,5 @@
+.DS_STORE
+config/config.development.js
+config/config.production.js
+node_modules/*
+

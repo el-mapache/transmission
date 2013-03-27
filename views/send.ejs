@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link href="stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="stylesheets/font-awesome.min.css">
+  <link href="stylesheets/tx.css" rel="stylesheet" type="text/css">
+  <script src="javascripts/vendor/binary.js"></script>
+  <script src="r.js" data-main="main.js"></script>
+ <title>transmitter</title>
+</head>
+<body>
+  <div id="absolute-wrapper">
+    <div id="header" class='span6 clear-margin'>
+      <h1>relay.</h1>
+      <p id="sub-header" class='muted'>stream files directly to remote clients in real time.</p>
+    </div>
+    <div class="clearfix"></div>
+    <div id='stats' class="span10">
+      <div id="subscribers" class="span2 tx-hud">
+        clients subscribing: <span class='hi-lite'>0</span> 
+      </div>
+      <div id="mode" class="span2 tx-hud">
+        mode: <span class='hi-lite'>-</span> 
+      </div>
+      <div class='clearfix'></div>
+    </div>
+    
+    <div class='clearfix'></div>
+    <div id="tx-container" class="span8">
+      <div id="tx-useage">
+        <h2 class='span7'>drag a file into the box below to transmit.</h2>
+        <div class='clearfix'></div>
+      </div>
+      <div id="tx-drop-box" class="span8"></div>
+    </div>
+  </div>
+</body>
+</html>
