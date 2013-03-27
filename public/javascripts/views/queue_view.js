@@ -56,8 +56,9 @@ define(['backbone','underscore','models/file','views/file_view','views/send_stre
 		
 		nextOrEnd: function() {
 			this.queue.splice(0,1);
-			console.log(this.queue);
+
 			if(this.queue.length === 0) return this.transmitting = false;
+			
 			this.sendFile();
 		},
 		
