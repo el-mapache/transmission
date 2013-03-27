@@ -64,7 +64,7 @@ define(['backbone','underscore','models/file','views/file_view','views/send_stre
 		
 		createFileView: function(file,type) {
 			this.$el.append('<div class="tx-file clearfix"></div>')
-      console.log(file)
+
 			this.fileView = new FileView({
 				model: new File(file),
 				type: type,

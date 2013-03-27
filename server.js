@@ -4,7 +4,6 @@ var express = require('express');
 var app = express();
 var configs = require('./config/loader.js');
 var port = configs.port;
-console.log(configs)
 
 app.use(express.bodyParser()); 
 app.use(express.static(__dirname + '/public/')); 
@@ -52,11 +51,12 @@ bs.on('connection', function(client){
   client.isTransmitting = false;
 
   emit({data: "numClients", clients: clients.numClients() - 1});
-
+	checkQueue();
+	
   client.on('stream', function(stream, meta){
 		// a messaging stream has been opened
 		if(meta.type === "message") {
-			console.log('message');
+			console.log('receiving message');
       client.messageStreamId = stream.id + '';
       message = client.streams[client.messageStreamId]; 
 
@@ -79,13 +79,12 @@ bs.on('connection', function(client){
 		}
 		
     if(meta.type === 'transmission') {
-      console.log(stream._maxListeners)
-      console.log(stream.prototype)
-      client.isTransmitting = true; 
-      locked = true;
+      if(!client.isTransmitting) {
+				client.isTransmitting = true; 
+      	locked = true;
+			}
+			
       broadcast(client.id, stream, meta);
-
-      console.log(stream) 
 
       stream.on('data',function(data) {
         stream.write({rx: data.length / meta.size});
@@ -185,6 +184,8 @@ function checkQueue() {
   var nextClient = bs.clients[queued.splice(0,1)]
 	
   nextClient.streams[nextClient.messageStreamId].write({data: 'isNext'});
+	nextClient.isTransmitting = true;
+	locked = true;
 }
 
 server.listen(port);
