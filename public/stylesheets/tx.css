@@ -22,7 +22,7 @@ body {
 }
 
 #header h1 {
-	color: #3daee4;/*#00b9ff*/
+	color: #3daee4;
 	line-height: 28px;
 	font-size: 27px;
 }
@@ -72,7 +72,7 @@ body {
 }
 
 .mode {
-	margin-top: 20px;
+	margin-top: 25px;
 }
 
 #tx-useage, #tx-useage h2 {
@@ -157,12 +157,13 @@ body {
 	margin-right: 20px;
 	padding-right: 5px;
 	border-radius: 2px;
-  margin-top: -1px
+  margin-top: 0px
 }
 
 .tx-success {
 	display: inline-block;
 	vertical-align: middle;
+	margin-top: 4px;
 }
 
 /* UTILITY */

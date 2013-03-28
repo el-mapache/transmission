@@ -39,7 +39,6 @@ var Clients = function(bs) {
   }
 }
 
-
 var queued = [],
 		clients = clients || new Clients(bs),
 		locked = false,
@@ -122,11 +121,9 @@ bs.on('connection', function(client){
 
   });
  
-  // message is equal (for now) to the id of the disconnected client.
-  // we have to manually kill the pub/sub stream because the connection event
-  // is firing before the client has a chance to completely disconnect
 	client.on('close',function(code,message) {
     console.log('close called');
+
 		if(client.isTransmitting) locked = false;
 		emit({data: "numClients", clients: clients.numClients() - 1});
 	});
