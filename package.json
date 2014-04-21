@@ -6,7 +6,10 @@
   "dependencies": {
     "express": "*",
     "binaryjs": "",
-    "ejs": ""
+    "ejs": "",
+    "redis": "",
+    "connect-redis": "1.4.7",
+    "passport": ""
   },
   
   "devDependencies": {},

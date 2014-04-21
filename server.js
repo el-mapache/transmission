@@ -4,14 +4,29 @@ var express = require('express');
 var app = express();
 var configs = require('./config/loader.js');
 var port = configs.port;
+var redis = require("redis").createClient();
+var RedisStore = require("connect-redis")(express);
+
 
 app.use(express.bodyParser()); 
 app.use(express.static(__dirname + '/public/')); 
 app.use(express.cookieParser());
-app.use(express.session({ secret: configs.cookieSecret }));
+
+app.use(express.session({ 
+  secret: configs.cookieSecret,
+  store: new RedisStore({
+    db: configs.dbIndex,
+    port: configs.redisPort,
+    host: 'localhost',
+    client: redis
+  })
+}));
+
 app.set('view engine', 'ejs'); 
 app.set('views', __dirname + '/views');
 
+var passport = require('./app/initializers/passport.js')(configs);
+var routes = require('./app/routes/auth.js')(app, passport);
 /* Middlewarez */
 if(process.env.NODE_ENV === "production" ) {
   var auth = express.basicAuth(configs.admin, configs.password)
@@ -19,7 +34,7 @@ if(process.env.NODE_ENV === "production" ) {
   var auth = function(req,res,next){next();};
 }
 
-app.get("/:name", auth, function(req,res) {
+app.get("/:name", function(req,res) {
   res.render('send', {room: req.params.room});
 });
 
