@@ -27,12 +27,17 @@ app.set('views', __dirname + '/views');
 
 var passport = require('./app/initializers/passport.js')(configs);
 var routes = require('./app/routes/auth.js')(app, passport);
+
 /* Middlewarez */
 if(process.env.NODE_ENV === "production" ) {
   var auth = express.basicAuth(configs.admin, configs.password)
 } else {
   var auth = function(req,res,next){next();};
 }
+
+app.get("/", function(req, res) {
+  res.render('index');
+});
 
 app.get("/:name", function(req,res) {
   res.render('send', {room: req.params.room});
@@ -194,6 +199,10 @@ function checkQueue() {
   if(queued.length === 0) return false;
 
   var nextClient = bs.clients[queued.splice(0,1)]
+
+  console.log('getting next client', nextClient);
+
+  if (!nextClient) return;
 	
   nextClient.streams[nextClient.messageStreamId].write({data: 'isNext'});
 	nextClient.isTransmitting = true;

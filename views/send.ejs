@@ -1,23 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link href="stylesheets/bootstrap.min.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="stylesheets/font-awesome.min.css">
-  <link href="stylesheets/tx.css" rel="stylesheet" type="text/css">
-  <script src="javascripts/vendor/binary.js"></script>
-  <script src="r.js" data-main="main.js"></script>
- <title>transmission</title>
-</head>
+<% include _head.ejs %>
 <body>
   <div id="absolute-wrapper">
-    <div id="header" class='span6 clear-margin'>
-      <h1>transmission.</h1>
-      <p id="sub-header" class='muted'>stream files directly to remote clients in real time.</p>
-    </div>
+    <% include _header.ejs %>
     <div class="clearfix"></div>
-    <div id='stats' class="span10">
+    <div id='stats' class="span12">
       <div id="subscribers" class="span2 tx-hud">
         clients subscribing: <span class='hi-lite'>0</span> 
       </div>

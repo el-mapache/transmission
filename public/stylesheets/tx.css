@@ -8,6 +8,14 @@ body {
   width: 100%;
 }
 
+ul {
+  list-style: none;
+}
+
+footer {
+  margin-top: 260px;
+}
+
 #absolute-wrapper {
 	position: relative;
 	height: auto;
@@ -53,14 +61,30 @@ body {
 .tx-hud {
 	background: #eee;
 	font-size: 14px;
-	height: 100px;
-	margin: 0 auto;
-	text-align: center;
 	border-radius: 2px;
 	border: 1px solid #e0e0e0;
 	color: #36444B;
-	line-height: 40px;
   margin-right: 5px
+}
+
+.lrg-pad {
+  padding: 30px;
+}
+
+
+.med-pad {
+  padding: 20px;
+}
+
+.lrg-pad-right {
+  padding-right: 30px;
+}
+
+.lrg-pad-left {
+  padding-left: 30px;
+}
+.center {
+  text-align: center;
 }
 
 .hi-lite {
@@ -71,6 +95,12 @@ body {
 	margin-top: 10px;
 }
 
+.fnt-lrg {
+  font-size: 17px;
+}
+.orange {
+	color: #ff6840;
+}
 .mode {
 	margin-top: 25px;
 }
@@ -170,6 +200,10 @@ body {
 .clear-margin { margin-left: 0; }
 .mute { color: #999 }
 .disabled { opacity: 0.3 }
+.grid-spacing { margin-top: 20px; margin-bottom: 20px; }
+.xxlarge-margin-top {
+  margin-top: 60px;
+}
 /* COLORS
 	coffee: #80523C
 	peach: #FA8950
