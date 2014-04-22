@@ -26,7 +26,8 @@ define([
 
     generateUniqueURL: function() {
       var uid = new GUID();
-      location.href = location.href + 'room/' + uid.get('accessCode');
+      uid.save();
+//      location.href = location.href + 'room/' + uid.get('accessCode');
     }
 
   });

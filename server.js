@@ -37,7 +37,11 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/room/:id', function(req,res) {
+app.post('/guid', function(req, res) {
+  console.log(req.params) 
+});
+
+app.get('/room/:id', roomExists, function(req,res) {
   res.render('send');
 });
 
@@ -205,6 +209,12 @@ function checkQueue() {
   nextClient.streams[nextClient.messageStreamId].write({data: 'isNext'});
 	nextClient.isTransmitting = true;
 	locked = true;
+}
+
+function roomExists(req, res, next) {
+  var roomId = req.params.id;
+
+
 }
 
 server.listen(port);
