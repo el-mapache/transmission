@@ -5,24 +5,30 @@
   <div id="absolute-wrapper">
     <% include _header.ejs %>
     <div class="clearfix"></div>
-    <div id='stats' class="span12">
-      <div id="subscribers" class="span2 tx-hud">
-        clients subscribing: <span class='hi-lite'>0</span> 
-      </div>
-      <div id="mode" class="span2 tx-hud">
-        mode: <span class='hi-lite'>-</span> 
-      </div>
-      <div class='clearfix'></div>
-    </div>
-    
-    <div class='clearfix'></div>
-    <div id="tx-container" class="span8">
-      <div id="tx-useage">
-        <h2 class='span7'>drag a file into the box below to transmit.</h2>
+    <div class="row grid-spacing">
+      <div id='stats' class="span12">
+        <div id="subscribers" class="span2 tx-hud center med-pad">
+          <span class="grid-spacing">
+            clients subscribing: <span class='hi-lite center'>0</span> 
+          </span>
+        </div>
+        <div id="mode" class="span2 tx-hud center med-pad">
+          mode: <span class='hi-lite center'>-</span> 
+        </div>
         <div class='clearfix'></div>
       </div>
-      <div id="tx-drop-box" class="span8"></div>
+    </div>
+
+    <div class="row">
+      <div id="tx-container" class="span8 grid-spacing">
+        <div id="tx-useage">
+          <h3 class='center'>drag a file into the box below to transmit.</h3>
+          <div class='clearfix'></div>
+        </div>
+        <div id="tx-drop-box" class="span8"></div>
+      </div>
     </div>
   </div>
+  <% include footer.ejs %>
 </body>
 </html>

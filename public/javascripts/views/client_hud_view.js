@@ -23,8 +23,6 @@ define([
     },
     
     // Since I dont have a central view to hold globals, we just call the global clientCount directly
-    // Javascript doesn't pass simple values, like numbers, by reference, so we must update the original
-    // object property
     changeClientCount: function(clientCount) {
       Backbone.View.prototype.clientCount = clientCount
       this.render();

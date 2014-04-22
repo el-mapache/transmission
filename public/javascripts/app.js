@@ -1,17 +1,15 @@
-define(['underscore',
-				'jquery',
-				'backbone',
-				'bootstrap',
-				'binary',
-				'views/file_view',
-				'models/file',
-				'mixins/progress_bar',
-				'views/messenger_view',
-				'views/rx_stream_view',
-				'views/hud_view',
-				'views/queue_view',
-				'views/tool_tip_view'
-], function(_,$,Backbone,Bootstrap,Binary,FileView,File,ProgressBar,MessengerView,RXStreamView,HudView,QueueView,ToolTipView) {
+define([
+  'underscore',
+  'jquery',
+  'backbone',
+  'bootstrap',
+  'binary',
+  'views/file_view',
+  'models/file',
+  'mixins/progress_bar',
+  'views/rx_stream_view',
+  'router'
+], function(_,$,Backbone,Bootstrap,Binary,FileView,File,ProgressBar,RXStreamView, router) {
 	return {
 		initialize: function() {
       // Global event buss mediates communication between views
@@ -23,10 +21,10 @@ define(['underscore',
       // Mix in the progress bar mixin
 			_.extend(FileView.prototype, ProgressBar);
 
-			new MessengerView();
-			new QueueView();
-			new HudView().render().el;
-			new ToolTipView().render().el;
+      new router();
+      Backbone.history.start();
+
 		}
 	};
 });
+

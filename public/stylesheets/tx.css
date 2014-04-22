@@ -13,7 +13,7 @@ ul {
 }
 
 footer {
-  margin-top: 260px;
+  margin-top: 80px;
 }
 
 #absolute-wrapper {
@@ -43,12 +43,9 @@ footer {
 }
 
 #tx-container {
-	min-height: 80px;
-	height: auto;
 	margin-left: auto;
 	margin-right: auto;
 	float: none;
-	margin-top: 40px;
 }
 
 #stats {
@@ -74,6 +71,10 @@ footer {
 
 .med-pad {
   padding: 20px;
+}
+
+.sm-pad {
+  padding: 10px;
 }
 
 .lrg-pad-right {
@@ -209,3 +210,55 @@ footer {
 	peach: #FA8950
 	tropics: #63CC94
 */
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  background: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.btn:hover,
+.btn:focus {
+  color: #ff6840;
+  text-decoration: none;
+}
+
+.btn-default {
+  color: #3daee4;
+  border-color: #ccc;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+.btn-lg,
+.btn-group-lg > .btn {
+  padding: 8px 14px;
+  font-size: 16px;
+  line-height: 1.33;
+  border-radius: 2px;
+}

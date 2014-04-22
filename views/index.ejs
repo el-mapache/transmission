@@ -5,22 +5,18 @@
   <div id="absolute-wrapper">
     <% include _header.ejs %>
     <div class="clearfix"></div>
-    <div id="tx-container" class="span8">
-      <div class="tx-hud med-pad span5 offset1">
-        <h3 class="center">login required.</h3>
-        <hr/>
-        <div class="muted grid-spacing center">
-          <span>authenticate to receive an access code.</span> 
-          <br/>
-          <span>share it with whomever you want to transfer files with.</span>
-        </div>
-        <div class="center xxlarge-margin-top">
-          <p>
-            <a class="orange fnt-lrg" href="/auth/facebook"><strong>Login with Facebook</strong></a>
-          </p>
-          <p>
-            <a class="orange fnt-lrg" href="/auth/google"><strong>Login with Google</strong></a>
-          </p>
+    <div class="row grid-spacing">
+      <div id="tx-container" class="span8 grid-spacing">
+        <div class="tx-hud med-pad span5 offset1">
+          <h3 class="center">begin transmission.</h3>
+          <hr/>
+          <div class="muted grid-spacing center">
+            <span>generate an access code.</span> 
+            <br/>
+            <span>share the url with whomever you want to transfer files with.</span>
+          </div>
+          <div id="grant-access" class="center xxlarge-margin-top">
+          </div>
         </div>
       </div>
     </div>

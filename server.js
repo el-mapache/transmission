@@ -7,12 +7,13 @@ var port = configs.port;
 var redis = require("redis").createClient();
 var RedisStore = require("connect-redis")(express);
 
-console.log(process.version);
-app.use(express.bodyParser()); 
-app.use(express.static(__dirname + '/public/')); 
+// Middleware hell
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+app.use(express.bodyParser());
+app.use('/public',express.static(__dirname + '/public'));
 app.use(express.cookieParser());
-
-app.use(express.session({ 
+app.use(express.session({
   secret: configs.cookieSecret,
   store: new RedisStore({
     db: configs.dbIndex,
@@ -21,12 +22,8 @@ app.use(express.session({
     client: redis
   })
 }));
+app.use(app.router);
 
-app.set('view engine', 'ejs'); 
-app.set('views', __dirname + '/views');
-
-var passport = require('./app/initializers/passport.js')(configs);
-var routes = require('./app/routes/auth.js')(app, passport);
 
 /* Middlewarez */
 if(process.env.NODE_ENV === "production" ) {
@@ -35,11 +32,11 @@ if(process.env.NODE_ENV === "production" ) {
   var auth = function(req,res,next){next();};
 }
 
-app.get("/", function(req, res) {
+app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get("/:name", function(req,res) {
+app.get('/:name', function(req,res) {
   res.render('send', {room: req.params.room});
 });
 

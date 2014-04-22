@@ -9,7 +9,6 @@
     "ejs": "",
     "redis": "",
     "connect-redis": "1.4.7",
-    "passport": ""
   },
   
   "devDependencies": {},
