@@ -7,7 +7,7 @@ var port = configs.port;
 var redis = require("redis").createClient();
 var RedisStore = require("connect-redis")(express);
 
-
+console.log(process.version);
 app.use(express.bodyParser()); 
 app.use(express.static(__dirname + '/public/')); 
 app.use(express.cookieParser());
