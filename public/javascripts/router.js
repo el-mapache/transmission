@@ -10,10 +10,15 @@ define([
   var router = Backbone.Router.extend({
     routes: {
       '': 'index',
-      '/room/:guid': 'transmit'
+      'room/:guid': 'transmit'
+    },
+
+    initialize: function() {
+      Backbone.history.start();
     },
 
     index: function() {
+      console.log('mew')
       new TokenGenerator();
     },
 

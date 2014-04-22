@@ -11,7 +11,6 @@ var RedisStore = require("connect-redis")(express);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(express.bodyParser());
-app.use('/public',express.static(__dirname + '/public'));
 app.use(express.cookieParser());
 app.use(express.session({
   secret: configs.cookieSecret,
@@ -22,6 +21,8 @@ app.use(express.session({
     client: redis
   })
 }));
+
+app.use(express.static(__dirname + '/public'));
 app.use(app.router);
 
 
@@ -36,8 +37,8 @@ app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/:name', function(req,res) {
-  res.render('send', {room: req.params.room});
+app.get('/room/:id', function(req,res) {
+  res.render('send');
 });
 
 var server = http.createServer(app);
