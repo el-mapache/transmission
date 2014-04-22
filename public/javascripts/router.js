@@ -6,7 +6,7 @@ define([
   'views/hud_view',
   'views/queue_view',
   'views/tool_tip_view',
-], function(Backbone, _, TokenGenerator, MessengerView, HudView, ToolTipView) {
+], function(Backbone, _, TokenGenerator, MessengerView, HudView,QueueView, ToolTipView) {
   var router = Backbone.Router.extend({
     routes: {
       '': 'index',
@@ -14,7 +14,7 @@ define([
     },
 
     initialize: function() {
-      Backbone.history.start();
+      Backbone.history.start({pushState: true});
     },
 
     index: function() {
