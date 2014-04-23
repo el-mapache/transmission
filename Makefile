@@ -8,3 +8,7 @@ stop:
 restart:
 	stop
 	start
+
+build:
+	node ./public/r.js -o ./public/app.build.js
+
