@@ -4,7 +4,7 @@ var express = require('express');
 var app = express();
 var configs = require('./config/loader.js');
 var port = configs.port;
-var redis = require("redis").createClient();
+var redis = require("redis").createClient(configs.redisPort);
 var RedisStore = require("connect-redis")(express);
 
 // Middleware hell
@@ -42,6 +42,7 @@ if(process.env.NODE_ENV === "production" ) {
 
 app.get('/', function(req, res) {
   var flashes = res.locals.flash();
+  console.log(flashes);
   res.render('index', {messages: flashes});
 });
 
@@ -54,7 +55,7 @@ app.post('/guid', function(req, res) {
 
   redis.select(configs.dbIndex, function(err) {
     redis.setex(code, 3600, true, function(err) {
-      if (err) return res.send(500, {"error": "Something went wrong."});
+      if (err) return res.send(500, {"error": err});
 
       res.send(200, {"code": code});
     });
