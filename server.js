@@ -42,7 +42,6 @@ if(process.env.NODE_ENV === "production" ) {
 
 app.get('/', function(req, res) {
   var flashes = res.locals.flash();
-  console.log(flashes);
   res.render('index', {messages: flashes, env: configs.env});
 });
 
@@ -63,7 +62,7 @@ app.post('/guid', function(req, res) {
 });
 
 app.get('/room/:id', roomExists, function(req,res) {
-  res.render('send');
+  res.render('send', {env: configs.env});
 });
 
 var server = http.createServer(app);
