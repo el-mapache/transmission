@@ -43,7 +43,7 @@ if(process.env.NODE_ENV === "production" ) {
 app.get('/', function(req, res) {
   var flashes = res.locals.flash();
   console.log(flashes);
-  res.render('index', {messages: flashes});
+  res.render('index', {messages: flashes, env: configs.env});
 });
 
 app.post('/guid', function(req, res) {
