@@ -17,7 +17,7 @@ define([
       // Most views need to know the client count, and I was too lazy to have them all message each other for it
 			Backbone.View.prototype.clientCount = 0;
       // See above
-			Backbone.View.prototype.binaryClient = new BinaryClient('ws://localhost:9000');
+			Backbone.View.prototype.binaryClient = new BinaryClient('ws://txrx.availableforfriendship.com:19874');
       // Mix in the progress bar mixin
 			_.extend(FileView.prototype, ProgressBar);
 

@@ -7,6 +7,15 @@
     <div class="clearfix"></div>
     <div class="row grid-spacing">
       <div id="tx-container" class="span8 grid-spacing">
+
+        <div>
+          <% if (messages) { %>
+            <% for (var alert in messages) { %>
+              <div class="alert alert-<%= alert %> center"><%= messages[alert] %></div>
+            <% } %>
+          <% } %>
+        </div>
+
         <div class="tx-hud med-pad span5 offset1">
           <h3 class="center">begin transmission.</h3>
           <hr/>
@@ -16,6 +25,9 @@
             <span>share the url with whomever you want to transfer files with.</span>
           </div>
           <div id="grant-access" class="center xxlarge-margin-top">
+            <p>
+              <button type="button" class="btn btn-default btn-lg">generate your code</button>
+            </p>
           </div>
         </div>
       </div>

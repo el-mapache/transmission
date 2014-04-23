@@ -26,10 +26,19 @@ define([
 
     generateUniqueURL: function() {
       var uid = new GUID();
-      uid.save();
-//      location.href = location.href + 'room/' + uid.get('accessCode');
-    }
+      uid.save({}, {
+        success: this._onSaveSuccess,
+        error: this._onSaveError
+      });
+    },
 
+    _onSaveSuccess: function(model, res, xhr) {
+      location.href = location.href + 'room/' + res.code;
+    },
+
+    _onSaveError: function(mode, res, xhr) {
+      var error = JSON.parse(res.responseText).error
+    }
   });
 
   return AccessGeneratorView;

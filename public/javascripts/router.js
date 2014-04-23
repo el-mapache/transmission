@@ -18,12 +18,10 @@ define([
     },
 
     index: function() {
-      console.log('mew')
       new TokenGenerator();
     },
 
     transmit: function(guid) {
-      console.log(arguments);
       new MessengerView();
       new QueueView();
       new HudView().render().el;

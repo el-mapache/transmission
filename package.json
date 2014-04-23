@@ -9,6 +9,7 @@
     "ejs": "",
     "redis": "",
     "connect-redis": "1.4.7",
+    "connect-flash": ""
   },
   
   "devDependencies": {},

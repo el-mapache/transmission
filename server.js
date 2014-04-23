@@ -23,8 +23,14 @@ app.use(express.session({
 }));
 
 app.use(express.static(__dirname + '/public'));
-app.use(app.router);
 
+app.use(require('connect-flash')());
+app.use(function(req, res, next) {
+  res.locals.flash = function() { return req.flash() };
+  next();
+});
+
+app.use(app.router);
 
 /* Middlewarez */
 if(process.env.NODE_ENV === "production" ) {
@@ -33,12 +39,26 @@ if(process.env.NODE_ENV === "production" ) {
   var auth = function(req,res,next){next();};
 }
 
+
 app.get('/', function(req, res) {
-  res.render('index');
+  var flashes = res.locals.flash();
+  res.render('index', {messages: flashes});
 });
 
 app.post('/guid', function(req, res) {
-  console.log(req.params) 
+  var code = req.body.accessCode
+
+  if (typeof code === "undefined") {
+    return res.send(400, {"error": "Access code invalid."});
+  }
+
+  redis.select(configs.dbIndex, function(err) {
+    redis.setex(code, 3600, true, function(err) {
+      if (err) return res.send(500, {"error": "Something went wrong."});
+
+      res.send(200, {"code": code});
+    });
+  });
 });
 
 app.get('/room/:id', roomExists, function(req,res) {
@@ -51,7 +71,7 @@ var bs = BinaryServer({server: server, chunkSize: 245760});
 
 var Clients = function(bs) {
   var bs = bs;
-  
+
   this.numClients = function() {
     return Object.keys(bs.clients).length;
   };
@@ -146,20 +166,21 @@ bs.on('connection', function(client){
 	client.on('close',function(code,message) {
     console.log('close called');
 
-		if(client.isTransmitting) locked = false;
+		if (client.isTransmitting) locked = false;
 		emit({data: "numClients", clients: clients.numClients() - 1});
 	});
 });
 
 
-// Send a message to all clients via their message channel
+// Send a message to all clients via their message channel.
 function emit(message) {
   var client,
       streamId;
 
-  for(client in bs.clients) {
+  for (client in bs.clients) {
     streamId = bs.clients[client].messageStreamId;
-    if(typeof streamId !== 'undefined') {
+
+    if (typeof streamId !== 'undefined') {
       bs.clients[client].streams[streamId].write(message);
     }
   }
@@ -169,16 +190,18 @@ function emit(message) {
 function broadcast(clientId, stream, meta) {
   var temporaryStream, cl, inc = 0, clientCount = clients.numClients();
 
-  if(clientCount < 2) return false;
+  // Don't broadcast if there is a single client connected.
+  if (clientCount < 2) return false;
 
-  for(cl in bs.clients) {
-    if(clientId == cl) {
+  for (cl in bs.clients) {
+    if (clientId == cl) {
       continue;
     } else {
       console.log('broadcasting to connected clients');
       temporaryStream = bs.clients[cl].send(stream,meta);
 
-      // when the source ends, remove our local copy
+      // when the source file finishes streaming,
+      // remove our local copy.
       temporaryStream.on('close', function() {
         inc++;
         if(inc === (clientCount - 1)) {
@@ -214,7 +237,18 @@ function checkQueue() {
 function roomExists(req, res, next) {
   var roomId = req.params.id;
 
+  redis.select(configs.dbIndex, function(err) {
+    redis.get(roomId, function(err, val) {
+      if (err) return next(err);
 
+      if (val === null) {
+        req.flash('error', 'Room not found. Generate a new code.');
+        res.redirect('/')
+      } else {
+        next();
+      }
+    });
+  });
 }
 
 server.listen(port);

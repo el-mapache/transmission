@@ -3,7 +3,7 @@ define([
 	'underscore'
 ], function(Backbone, _) {
   var guid = Backbone.Model.extend({
-    urlRoot: '/guid',
+    urlRoot: 'guid',
     defaults: {
       accessCode: null
     },
