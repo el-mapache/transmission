@@ -26,6 +26,7 @@ define([
     // Update the progress bar as files are transmitted. Occasionally, we will
     // go slightly past 100%, this function forces the bar to stop there
     update: function(data) {
+      console.log(data);
       if(this.level < 100) this.level += data;
       if(this.level >= 100) this.level = 100
       this.updateProgress();

@@ -4,7 +4,7 @@ define([
   'models/guid',
   'text!templates/generate.html'
 ], function(Backbone, _, GUID, GenerateTmpl) {
-  var AccessGeneratorView = Backbone.View.extend({
+  var TokenGeneratorView = Backbone.View.extend({
     el: "#grant-access",
 
     template: _.template(GenerateTmpl),
@@ -41,6 +41,6 @@ define([
     }
   });
 
-  return AccessGeneratorView;
+  return TokenGeneratorView;
 });
 

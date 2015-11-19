@@ -1,13 +1,14 @@
 define([
   'backbone',
   'underscore',
-  'views/access_generator_view',
+  'views/token_generator_view',
   'views/messenger_view',
   'views/hud_view',
   'views/queue_view',
   'views/tool_tip_view',
-], function(Backbone, _, TokenGenerator, MessengerView, HudView,QueueView, ToolTipView) {
+], function(Backbone, _, TokenGeneratorView, MessengerView, HudView, QueueView, ToolTipView) {
   var router = Backbone.Router.extend({
+    
     routes: {
       '': 'index',
       'room/:guid': 'transmit'
@@ -18,7 +19,7 @@ define([
     },
 
     index: function() {
-      new TokenGenerator();
+      new TokenGeneratorView();
     },
 
     transmit: function(guid) {
