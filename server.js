@@ -116,23 +116,32 @@ var Clients = function(bs) {
   }
 }
 
-var queued = [],
-		clients = clients || new Clients(bs),
-		locked = false,
-		broadcastComplete = false;
+// Global list of all clients queued for transmission
+var queued = [];
+// very very simple wrapper for the binary server clients dictionary
+var clients = clients || new Clients(bs);
+// Server is free to allow a user to transmit content to others.
+var locked = false;
+var broadcastComplete = false;
 
-bs.on('connection', function(client){
-	console.log('connect')
+bs.on('connection', function(client) {
+	console.log('connect');
+
   var message = null;
   client.isTransmitting = false;
 
-  emit({data: "numClients", clients: clients.length() - 1});
+  emit({
+    data: 'numClients',
+    clients: clients.length()
+  });
+
 	checkQueue();
 
-  client.on('stream', function(stream, meta){
+  client.on('stream', function(stream, meta) {
 		// a messaging stream has been opened
-		if (meta.type === "message") {
-			console.log('receiving message');
+		if (meta.type === 'message') {
+			console.log('receiving message, stream id: ', stream.id);
+      // WTODO hy am i casting this to a string
       client.messageStreamId = stream.id + '';
       message = client.streams[client.messageStreamId];
 
@@ -141,17 +150,25 @@ bs.on('connection', function(client){
         // connected, so subtract one from the number of connected clients.
         emit({
           data: "numClients",
-          clients: clients.length() - 1
+          clients: clients.length()
         });
       }
 
       message.on('data', function(data) {
         if (data.event == 'beforeTransmit') {
-					console.log(clients.length());
-          if (queued.length === 0 && !locked && clients.length() >= 2) {
-            message.write({data: "transmitOK"});
+					console.log('Data received. Connected client:', clients.length());
+          // No clients in the queue, no client is transmitting, and there is
+          // more than one connected client
+          if (!queued.length && !locked && clients.length() >= 2) {
+            // This client is ok to begin streaming
+            message.write({
+              data: 'transmitOK'
+            });
           } else {
-            message.write({data: "locked"});
+            // Someone is already streaming, so queue up this client's request
+            message.write({
+              data: 'locked'
+            });
             queued.push(client.id);
           }
         }
@@ -159,15 +176,17 @@ bs.on('connection', function(client){
 		}
 
     if (meta.type === 'transmission') {
-      if(!client.isTransmitting) {
+      if (!client.isTransmitting) {
 				client.isTransmitting = true;
       	locked = true;
 			}
 
       broadcast(client.id, stream, meta);
 
-      stream.on('data',function(data) {
-        stream.write({rx: data.length / meta.size});
+      stream.on('data', function(data) {
+        stream.write({
+          rx: data.length / meta.size
+        });
       });
 
       stream.on('end',function() {
@@ -187,7 +206,7 @@ bs.on('connection', function(client){
             checkQueue();
             clearInterval(broadcastEnd);
           }
-        },500);
+        }, 500);
       });
     }
 
@@ -203,8 +222,16 @@ bs.on('connection', function(client){
 
   });
 
-	client.on('close',function(code,message) {
-    console.log('close called');
+  /**
+   * handler called when client disconnects. Emits updated count of commencted
+   * cients.
+   * @param  {String} 'close'        event being handled
+   * @param  {Function}              callback passed two arguments, an internal
+   *                                 code and an optional message
+   * @return {Undefined}             _
+   */
+	client.on('close',function(code, message) {
+    console.log('close called', code, message);
 
 		if (client.isTransmitting) {
       locked = false;
@@ -212,7 +239,7 @@ bs.on('connection', function(client){
 
 		emit({
       data: "numClients",
-      clients: clients.length() - 1
+      clients: clients.length()
     });
 	});
 });
@@ -220,8 +247,8 @@ bs.on('connection', function(client){
 
 // Send a message to all clients via their message channel.
 function emit(message) {
-  var client,
-      streamId;
+  var client;
+  var streamId;
 
   for (client in bs.clients) {
     streamId = bs.clients[client].messageStreamId;
@@ -234,25 +261,40 @@ function emit(message) {
 
 // sends a stream to all clients but the originator
 function broadcast(clientId, stream, meta) {
-  var temporaryStream, cl, inc = 0, clientCount = clients.numClients();
+  var temporaryStream;
+  var inc = 0;
+  var clientCount = clients.length();
 
   // Don't broadcast if there is a single client connected.
   if (clientCount < 2) {
     return false;
   }
 
+  // Loops through all the clients in the client dictionary
   for (client in bs.clients) {
+    // skip the broadcasting client, they don't need to receive messages
     if (clientId == client) {
       continue;
     } else {
       console.log('broadcasting to connected clients');
-      temporaryStream = bs.clients[client].send(stream,meta);
+
+      // Seems like every client is getting their own stream.
+      // Would it be possible to share a single stream between all clients?
+      // This would make it impossible for a client to join midstream and
+      //
+      // TODO: Send a message to the broadcaster to let them know when a stream
+      // has completed, that way they can know well all connected clients have
+      // received the file.
+      temporaryStream = bs.clients[client].send(stream, meta);
 
       // when the source file finishes streaming,
       // flush the stream.
       temporaryStream.on('close', function() {
+        // Each user closes their own stream, so increment the completed stream
+        // counter and clean it up.
         inc++;
         if(inc === (clientCount - 1)) {
+          // All client streams have finished, destroy the stream.
           temporaryStream.destroy();
           broadcastComplete = true;
         }
@@ -261,6 +303,10 @@ function broadcast(clientId, stream, meta) {
       temporaryStream.on('error',function() {
         console.log('temp stream error!');
         console.log(arguments);
+        // Cleanup the stream on error as well.
+        // TODO this might cause errors. Look into testing this.
+        // temporaryStream.destroy();
+        // broadcastComplete = true;
       });
     }
   }
@@ -292,10 +338,18 @@ function checkQueue() {
 	locked = true;
 }
 
+/**
+ * Middleware
+ * Ensure that the room being requested by the user is keyed in redis.
+ */
 function roomExists(req, res, next) {
   var roomId = req.params.id;
 
   redis.select(configs.dbIndex, function(err) {
+    if (err) {
+      return next(err);
+    }
+
     redis.get(roomId, function(err, val) {
       // An error occured while attempting to access redis.
       if (err) {
