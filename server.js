@@ -107,7 +107,7 @@ var Clients = function(bs) {
   var bs = bs;
 
   // Get count of clients in a given room?
-  this.numClients = function() {
+  this.length = function() {
     return Object.keys(bs.clients).length;
   };
 
@@ -126,7 +126,7 @@ bs.on('connection', function(client){
   var message = null;
   client.isTransmitting = false;
 
-  emit({data: "numClients", clients: clients.numClients() - 1});
+  emit({data: "numClients", clients: clients.length() - 1});
 	checkQueue();
 
   client.on('stream', function(stream, meta){
@@ -136,19 +136,19 @@ bs.on('connection', function(client){
       client.messageStreamId = stream.id + '';
       message = client.streams[client.messageStreamId];
 
-			if(clients.numClients() > 1) {
+			if(clients.length() > 1) {
         // We want each person to know how many people other than themselves are
         // connected, so subtract one from the number of connected clients.
         emit({
           data: "numClients",
-          clients: clients.numClients() - 1
+          clients: clients.length() - 1
         });
       }
 
       message.on('data', function(data) {
         if (data.event == 'beforeTransmit') {
-					console.log(clients.numClients());
-          if (queued.length === 0 && !locked && clients.numClients() >= 2) {
+					console.log(clients.length());
+          if (queued.length === 0 && !locked && clients.length() >= 2) {
             message.write({data: "transmitOK"});
           } else {
             message.write({data: "locked"});
@@ -212,7 +212,7 @@ bs.on('connection', function(client){
 
 		emit({
       data: "numClients",
-      clients: clients.numClients() - 1
+      clients: clients.length() - 1
     });
 	});
 });
@@ -269,16 +269,26 @@ function broadcast(clientId, stream, meta) {
 // If the queue is empty, do nothing, otherwise, remove the client from
 // the queue and send them a message to start their stream.
 function checkQueue() {
-  if(queued.length === 0) return false;
+  // Queue is empty, return.
+  if (queued.length === 0) {
+    return false;
+  }
 
+  // Get the next client off the FIFO queue. Looks up that client in
+  // our dictionary of clients.
   var nextClient = bs.clients[queued.splice(0,1)];
 
   console.log('getting next client', nextClient);
 
-  if (!nextClient) return;
+  // Next client not found in the dictionary, return.
+  if (!nextClient) {
+    return false;
+  }
 
   nextClient.streams[nextClient.messageStreamId].write({data: 'isNext'});
-	nextClient.isTransmitting = true;
+  // flip client's state to transmitting
+  nextClient.isTransmitting = true;
+  // lock transmissions, no new clients may start transmitting at this time.
 	locked = true;
 }
 
@@ -294,7 +304,7 @@ function roomExists(req, res, next) {
 
       if (val === null) {
         req.flash('error', 'Room not found. Generate a new code below.');
-        res.redirect('/')
+        return res.redirect('/')
       } else {
         next();
       }
