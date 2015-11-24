@@ -4,7 +4,7 @@ define([
 	'binary'
 ], function(Backbone, _, Binary) {
 	var MessengerView = Backbone.View.extend({
-		
+
 		initialize: function() {
 			_.bindAll(this,'_dispatch', '_openMessageStream','sendMessage');
 
@@ -14,11 +14,12 @@ define([
 
 		_openMessageStream: function() {
 			this.messenger = this.binaryClient.createStream({type: "message"});
-			this.messenger.on('data', this._dispatch); 
+			this.messenger.on('data', this._dispatch);
+			this.sendMessage('onConnect');
 		},
-		
+
 		_dispatch: function(data) {
-			console.log(data)
+			console.log('Receiving socket data', data)
 			switch(data.data) {
 				case "numClients":
 					this.dispatcher.trigger('changeClientCount', data.clients);
@@ -34,11 +35,11 @@ define([
 					break;
 			}
 		},
-		
+
 		sendMessage: function(msgEvt) {
 			this.messenger.write({event: msgEvt});
 		}
 	});
-	
+
 	return MessengerView;
 });

@@ -63,16 +63,8 @@ app.get('/', function(req, res) {
 });
 
 // Endpoint to allow user to create a unique room id to share.
-// TODO move code generation to the server? Doesnt really matter what the code
-// is I suppose.
 app.post('/guid', function(req, res) {
-  var code = req.body.accessCode
-
-  if (typeof code === "undefined") {
-    return res.send(400, {
-      error: "Invalid access code."
-    });
-  }
+  var code = guid();
 
   redis.select(configs.dbIndex, function(err) {
     // Access guids are stored for one hour.
@@ -106,7 +98,7 @@ var bs = BinaryServer({server: server, chunkSize: 245760});
 var Clients = function(bs) {
   var bs = bs;
 
-  // Get count of clients in a given room?
+  // Get count of all connected clients regardless of room.
   this.length = function() {
     return Object.keys(bs.clients).length;
   };
@@ -125,14 +117,14 @@ var locked = false;
 var broadcastComplete = false;
 
 bs.on('connection', function(client) {
-	console.log('connect');
+	console.log('Binary WebSocket connection started.');
 
   var message = null;
   client.isTransmitting = false;
 
   emit({
     data: 'numClients',
-    clients: clients.length()
+    clients: clients.length() - 1
   });
 
 	checkQueue();
@@ -141,18 +133,15 @@ bs.on('connection', function(client) {
 		// a messaging stream has been opened
 		if (meta.type === 'message') {
 			console.log('receiving message, stream id: ', stream.id);
-      // WTODO hy am i casting this to a string
-      client.messageStreamId = stream.id + '';
+      client.messageStreamId = stream.id;
       message = client.streams[client.messageStreamId];
 
-			if(clients.length() > 1) {
-        // We want each person to know how many people other than themselves are
-        // connected, so subtract one from the number of connected clients.
-        emit({
-          data: "numClients",
-          clients: clients.length()
-        });
-      }
+      // We want each person to know how many people other than themselves are
+      // connected, so subtract one from the number of connected clients.
+      emit({
+        data: "numClients",
+        clients: clients.length() - 1
+      });
 
       message.on('data', function(data) {
         if (data.event == 'beforeTransmit') {
@@ -184,19 +173,20 @@ bs.on('connection', function(client) {
       broadcast(client.id, stream, meta);
 
       stream.on('data', function(data) {
+        console.log('Streaming data.');
         stream.write({
           rx: data.length / meta.size
         });
       });
 
-      stream.on('end',function() {
+      stream.once('end',function() {
         /*
          * Once the file has been streamed to the server, check if all
          * connected clients have finished with the stream before removing it.
         */
         var broadcastEnd = setInterval(function() {
-          if(broadcastComplete) {
-            console.log('stream ending');
+          if (broadcastComplete) {
+            console.log('stream ending.');
             stream.destroy();
             locked = false;
             broadcastComplete = false;
@@ -216,8 +206,8 @@ bs.on('connection', function(client) {
     });
 
     stream.on('close',function() {
-      console.log('stream over');
-      console.log(broadcastComplete)
+      console.log('stream over.');
+      console.log('broadcast complete?', broadcastComplete);
     });
 
   });
@@ -231,7 +221,7 @@ bs.on('connection', function(client) {
    * @return {Undefined}             _
    */
 	client.on('close',function(code, message) {
-    console.log('close called', code, message);
+    console.log('Client closing.', code, message);
 
 		if (client.isTransmitting) {
       locked = false;
@@ -239,7 +229,7 @@ bs.on('connection', function(client) {
 
 		emit({
       data: "numClients",
-      clients: clients.length()
+      clients: clients.length() - 1
     });
 	});
 });
@@ -290,10 +280,12 @@ function broadcast(clientId, stream, meta) {
       // when the source file finishes streaming,
       // flush the stream.
       temporaryStream.on('close', function() {
+        console.log('Temporary stream closing.');
         // Each user closes their own stream, so increment the completed stream
         // counter and clean it up.
         inc++;
         if(inc === (clientCount - 1)) {
+          console.log('Cleaning up temporary stream');
           // All client streams have finished, destroy the stream.
           temporaryStream.destroy();
           broadcastComplete = true;
@@ -364,6 +356,16 @@ function roomExists(req, res, next) {
       }
     });
   });
+}
+
+// Generates a guid-ish number to server as a room ID.
+function guid() {
+  function s4() {
+    var num = (1 + Math.random() * 65536) | 0;
+    return num.toString(16).substring(1);
+  }
+
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
 server.listen(port);

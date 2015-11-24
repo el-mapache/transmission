@@ -25,8 +25,7 @@ define([
     },
 
     generateUniqueURL: function() {
-      var uid = new GUID();
-      uid.save({}, {
+      new GUID().save({}, {
         success: this._onSaveSuccess,
         error: this._onSaveError
       });
@@ -43,4 +42,3 @@ define([
 
   return TokenGeneratorView;
 });
-

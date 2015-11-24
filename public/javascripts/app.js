@@ -23,6 +23,8 @@ define([
       // See above
 			//Backbone.View.prototype.binaryClient = new BinaryClient('ws://txrx.availableforfriendship.com:19874');
 			Backbone.View.prototype.binaryClient = new BinaryClient('ws://localhost:9000');
+			//Backbone.View.prototype.binaryClient = new BinaryClient('ws://192.168.0.2:9000');
+			//http://192.168.0.2:9000/room/092c87-f4-244-d41-223d990d
 
       // Mix in the progress bar mixin
 			_.extend(FileView.prototype, ProgressBar);

@@ -9,10 +9,10 @@ define(['backbone','underscore'], function(Backbone,_) {
 			this.dispatcher.trigger("changeMode","TX");
 			this.openStream();
 		},
-		
+
 		openStream: function() {
 			var self = this;
-			
+
 			this.stream = this.binaryClient.send(this.file.get('file'),{
 				type: "transmission" ,
 				name: self.file.get('name'),
@@ -23,9 +23,9 @@ define(['backbone','underscore'], function(Backbone,_) {
 			this.stream.on('close', this.onStreamClose);
 			this.stream.on('error',this.onStreamError);
 		},
-		
+
 		onStreamData: function (data) {
-			var level = Math.round(data.rx * 100,1);	
+			var level = Math.round(data.rx * 100, 1);
 			this.dispatcher.trigger('transmissionProgress',level);
 		},
 
@@ -42,6 +42,6 @@ define(['backbone','underscore'], function(Backbone,_) {
 			console.log(arguments);
 		}
 	});
-	
+
 	return SendStreamView;
 });
