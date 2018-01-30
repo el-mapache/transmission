@@ -1,11 +1,13 @@
 var fs = require('fs');
 var http = require('http');
 var express = require('express');
+var session = require('express-session');
+var static = require('serve-static');
 var app = express();
 var configs = require('./config/loader.js');
 var port = configs.port;
 var redis = require("redis").createClient(configs.redisPort);
-var RedisStore = require("connect-redis")(express);
+var RedisStore = require("connect-redis")({ session: session });
 
 
 //--------------------------------------------------------------//
@@ -14,18 +16,20 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 // Parse form data
-app.use(express.bodyParser());
-app.use(express.cookieParser());
+app.use(require('body-parser').json());
+// app.use(require('cookie-parser'));
 
-// Store sessions within redis.
-app.use(express.session({
+//Store sessions within redis.
+app.use(session({
   secret: configs.cookieSecret,
   store: new RedisStore({
     db: configs.dbIndex,
     port: configs.redisPort,
-    host: 'localhost',
-    client: redis
-  })
+    hostname: 'localhost',
+    client: redis,
+  }),
+  resave: false,
+  saveUninitialized: true,
 }));
 
 app.use(express.static(__dirname + '/public'));
@@ -37,8 +41,6 @@ app.use(function(req, res, next) {
   };
   next();
 });
-
-app.use(app.router);
 
 /* Middlewarez */
 if(process.env.NODE_ENV === "production" ) {

@@ -2,22 +2,22 @@
   "author": "adam",
   "name": "transmitter",
   "version": "0.1.8",
-
   "dependencies": {
-    "express": "*",
     "binaryjs": "",
-    "ejs": "",
-    "redis": "",
+    "body-parser": "^1.18.2",
+    "connect-flash": "",
     "connect-redis": "1.4.7",
-    "connect-flash": ""
+    "cookie-parser": "^1.4.3",
+    "ejs": "",
+    "express": "*",
+    "express-session": "^1.15.6",
+    "redis": "",
+    "serve-static": "^1.13.1"
   },
-  
   "devDependencies": {},
-  
   "scripts": {
     "start": "node server.js"
   },
-  
   "main": "server.js",
   "license": "MIT"
 }
